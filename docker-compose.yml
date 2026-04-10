@@ -1,0 +1,32 @@
+version: '3'
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    env_file: 
+      - .env
+    networks:
+      - internal-net
+
+  mongodb:
+    image: mongo:4
+    ports:
+      - "27017:27017"
+    networks:
+      - internal-net
+
+  # The Target: Mock internal metadata service
+  internal-metadata:
+    image: mendhak/http-https-echo
+    environment:
+      - HTTP_PORT=8080
+      - ECHO_INCLUDE_ENV_VARS=1
+      - SECRET_AWS_ACCESS_KEY=AKIAIOSFODNN7EXAMPLE
+    networks:
+      - internal-net
+
+networks:
+  internal-net:
